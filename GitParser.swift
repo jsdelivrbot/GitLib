@@ -11,7 +11,7 @@ class GitParser{
 	 */
 	static func status(_ localPath:String, _ option:String)->String{
 		//--log "localPath: " + localPath
-		let shellScript:String = /*"cd " + localPath + ";" + */Git.path + "git status" + " " + option
+		let shellScript:String = Git.path + Git.git + " " + Git.status + " " + option
 		return ShellUtils.run(shellScript,localPath)
 	}
 	/**
@@ -23,8 +23,7 @@ class GitParser{
 	 * NOTE: "git log --oneline origin/master..master" commits the local branch is ahead of remote
 	 */
 	static func log(_ localPath:String, _ cmd:String)->String{
-		let shellScript:String = /*"cd " + localPath + ";" + */Git.path + "git log " + cmd
-		//Swift.print("shellScript: " + "\(shellScript)")
+		let shellScript:String = Git.path + Git.git + " " + Git.log + " " + cmd
 		return ShellUtils.run(shellScript,localPath)
 	}
     /**
@@ -32,16 +31,14 @@ class GitParser{
      * EXAMPLE: git show head~9 --pretty=format:"%ci" --no-patch (output: 2015-12-03 16:59:09 +0100)
      */
     static func show(_ localPath:String, _ cmd:String)->String{
-        let shellScript:String = Git.path + "git show " + cmd
-        //Swift.print("shellScript: " + "\(shellScript)")
+        let shellScript:String = Git.path + Git.git + " " + Git.show + " " + cmd
         return ShellUtils.run(shellScript,localPath)
     }
 	/**
 	 * Returns https://github.com/user/repository.git
 	 */
 	static func originUrl(_ localPath:String)->String{
-		let shellScript:String = /*"cd " + localPath + ";" + */Git.path + "git config --get remote.origin.url"
-		//--log "shellScript: " + shellScript
+		let shellScript:String = Git.path + Git.git + " " + Git.config + " --get remote.origin.url"
 		return ShellUtils.run(shellScript,localPath)
 	}
 	/**
@@ -53,8 +50,8 @@ class GitParser{
 	 * TODO: impliment user and pass when this is needed, use "" if not
 	 */
 	static func cherry(_ localPath:String, _ branch:String)->String{
-		let loc:String = "origin" //--"https://" + user_name + ":" + user_password + "@" + remote_repo_url
-		let shellScript:String = /*"cd " + localPath + ";" + */Git.path + "git cherry" + " -v " + loc + "/" + branch
+		let loc:String = Git.origin /*--"https://" + user_name + ":" + user_password + "@" + remote_repo_url*/
+		let shellScript:String = Git.path + Git.git + " " + Git.cherry  + " -v " + loc + "/" + branch
 		return ShellUtils.run(shellScript,localPath)//--TODO: whats the -v, verbose?
 	}
 	/**
@@ -64,7 +61,6 @@ class GitParser{
 	 */
 	static func unMergedFiles(_ localPath:String)->[String]{
 		let unmMergedPaths:String = diff(localPath, "--name-only --diff-filter=U")
-        //Swift.print("unmMergedPaths: " + "\(unmMergedPaths)")
 		return StringParser.paragraphs(unmMergedPaths)// :TODO: use some sort of linesToArray method here
 	}
 	/*
@@ -75,12 +71,7 @@ class GitParser{
 	 * NOTE: git diff returns a result if a file is changed (the returned result will contain the lines that changed with a "-" preceding the line that is removed and a "+" preceding the line that is added)
 	 */
     static func diff(_ localRepoPath:String, _ cmd:String)->String{
-		let shellScript:String =  /*"cd " + localRepoPath + ";" + */Git.path + "git diff " + cmd
+		let shellScript:String = Git.path + Git.git + " " + Git.diff + " " + cmd
 		return ShellUtils.run(shellScript,localRepoPath)
 	}
-    /**
-     * ⚠️️DEPRECATED⚠️️: Use GitParser.log instead
-     * NOTE: the do_log name is used because applescript has reserved the log word for its own log method
-     */
-    static func doLog(_ localPath:String, _ cmd:String)->String{return log(localPath, cmd)}
 }
