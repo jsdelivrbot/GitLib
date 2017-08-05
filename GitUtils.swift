@@ -1,9 +1,9 @@
 class GitUtils{
 	/**
 	 * Manual pull
-	 * CAUTION: It's best practice to always commit any uncommited files before you attempt to pull
-	 * CAUTION: Remember to wrap this method in a try error clause, so that you can handle merge conflicts
-	 * NOTE: the goal of this method is to arrive at the same state as the remote branch
+	 * CAUTION: ⚠️️ It's best practice to always commit any uncommited files before you attempt to pull
+	 * CAUTION: ⚠️️ Remember to wrap this method in a try error clause, so that you can handle merge conflicts
+	 * NOTE: the goal of this method is to arrive at the same state as the remote branch (git clone )
 	 * TODO: add support for different local and remote branch name
 	 */
     static func manualPull(_ repo:GitRepo) -> Bool{
@@ -29,13 +29,29 @@ class GitUtils{
 	 * NOTE:  same as clone but differs in that it clones into an existing folder
 	 * TODO: this method is wrong see git workflows on gitsyncs github.com
 	 */
-	static func manualClone(_ locaPath:String, _ remotePath:String){
-		//--"git init" <--Installs the invisible .git folder
+    static func manualClone(_ localPath:String, _ remotePath:String, _ branch:String = "master"){
+        Swift.print("manualClone started")
+//        fatalError("fix this")
+        _ = GitModifier.initialize(localPath)//<--Installs the invisible .git folder
+        Swift.print("initialize.completed")
+		//--"git init"
 		//--TODO: do reasearch with different posix paths ~/testing/ vs Users/Joe/testing vs macintosh hd/ user / etc, and how to convert between them
-		//--"git remote add origin https://github.com/user/testing.git" <-- attach a remote repo
+		_ = GitModifier.attachRemoteRepo(localPath, remotePath)
+        Swift.print("attachRemoteRepo.completed")
+        //--"git remote add origin https://github.com/user/testing.git" <-- attach a remote repo
+        let gitRepo:GitRepo = (localPath:localPath,  remotePath:remotePath,  branch:branch)
+        
+        _ = GitModifier.pull(gitRepo)
+//        _ = GitModifier.fetch(gitRepo)
+//        Swift.print("fetch1.completed")
 		//--"git fetch origin master" <--Download the latest .git data
+//        _ = GitModifier.checkOut(localPath, "origin/"+branch, "")
+//        Swift.print("checkOut.completed")
 		//--"git checkout master" <-- Switches to the master branch (if you are already there then skip this)
+//        _ = GitModifier.fetch(gitRepo)
+//        Swift.print("fetch2.completed")
 		//--"git fetch origin master" <-- Do this Again to download the latest .git data  , since your ahead sort of
+        Swift.print("manualClone finished")
 	}
     /**
      * Returns the commit count
@@ -51,6 +67,7 @@ class GitUtils{
     /**
      * NOTE: to find the first hash in a repo use this git command: git log -1 --pretty=format:"%H"
      * NOTE: Short hash and long hash works (for more precision use long hash)
+     * ⚠️️ TODO: rename _ hash to hash 
      */
     static func commitCount(_ localRepoPath:String,_ hash1:String,_ hash2:String)->String{
         let shellScript:String = Git.path + Git.git + " " + "rev-list "+hash1+" ^"+hash2+" --count"

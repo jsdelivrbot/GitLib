@@ -58,11 +58,13 @@ class GitModifier{
     * TODO: ⚠️️ What is git pull --rebase <remote>. Same as the above command, but instead of using git merge to integrate the remote branch with the local one, use git rebase.
     * NOTE: you can also do "git pull" if you are already switched into the branch you want to pull and there is only one remote repo attached to the local repo
     */
-   static func pull(_ repo:GitRepo, _ key:GitKey)->String{
-       let remoteLocation:String = "https://" + key.user + ":" + key.pass + "@" + repo.remotePath
-       let shellScript:String = Git.path + Git.git + " " + Git.pull + " " + remoteLocation + " " + repo.branch
-       return ShellUtils.run(shellScript,repo.localPath)
-   }
+    static func pull(_ repo:GitRepo, _ key:GitKey? = nil)->String{
+        let credentials:String = key != nil ? key!.user + ":" + key!.pass + "@" : ""
+        let remoteLocation:String = "https://" + credentials + repo.remotePath
+        let shellScript:String = Git.path + Git.git + " " + Git.pull + " " + remoteLocation + " " + repo.branch
+        Swift.print("shellScript: " + "\(shellScript)")
+        return ShellUtils.run(shellScript,repo.localPath)
+    }
     /**
      * Uploads the current from the local git commits to the remote git
      * PARAM: from_where: "master"
@@ -118,12 +120,13 @@ class GitModifier{
     * Clone
     * NOTE: Cloning automatically creates a remote connection called "origin" pointing back to the original repository.
     * NOTE: git clone <repo> <directory>
+    * NOTE: this will also create the folders if they dont exist, even nested
     */
    static func clone(_ remotePath:String, _ localPath:String)->String{
-       let shellScript:String = Git.path + Git.git + " " + Git.clone + " " + remotePath + " " + localPath
-       return ShellUtils.run(shellScript)
+        let shellScript:String = Git.path + Git.git + " " + Git.clone + " " + remotePath + " " + localPath
+        Swift.print("GitModifier.clone() shellScript: \(shellScript)")
+        return ShellUtils.run(shellScript)
    }
-   
    /**
     * NOTE: brings your remote refs up to date
     * TODO: Ellaborate, it seems this method is needed to get the cherry method to work, can it be used with specific branches?
@@ -139,11 +142,14 @@ class GitModifier{
     * NOTE: git fetch <remote> (Fetch all of the branches from the repository. This also downloads all of the required commits and files from the other repository.)
     * NOTE: git fetch <remote> <branch> (Same as the above command, but only fetch the specified branch.)
     * NOTE: you can switch to the fetched branch with: "git checkout origin/master" then do "git log --oneline master..origin/master" to view the commit ids of the commits that the remote repo is ahead of local repo
-    * TODO: does this work here: "git checkout --theirs *"  or "git checkout --ours *" 
+    * TODO: ⚠️️ does this work here: "git checkout --theirs *"  or "git checkout --ours *"
+    * TODO: ⚠️️ add branch support I suppose ?
     */
     static func fetch(_ repo:GitRepo)->String{
        var shellScript:String = Git.path + Git.git + " " + Git.fetch + " " + Git.origin
+        
        if(repo.branch != " "){ shellScript += " " + repo.branch}
+        Swift.print("shellScript: " + "\(shellScript)")
        return ShellUtils.run(shellScript,repo.localPath)
    }
    /**
@@ -189,6 +195,7 @@ class GitModifier{
 	static func checkOut(_ localRepoPath:String, _ loc:String, _ filePath:String)->String{
 		var shellScript:String = Git.path + Git.git + " " + Git.checkOut + " " +  loc
         if (filePath != " "){ shellScript  += " " + filePath }
+        Swift.print("shellScript: " + "\(shellScript)")
 		return ShellUtils.run(localRepoPath,shellScript)
 	}
     /*
