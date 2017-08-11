@@ -28,7 +28,7 @@ class GitUtils{
 	/**
 	 * Manually clone a git to a local folder
 	 * NOTE:  same as clone but differs in that it clones into an existing folder
-	 * TODO: this method is wrong see git workflows on gitsyncs github.com
+	 * TODO: ⚠️️ this method is wrong see git workflows on gitsyncs github.com
 	 */
     static func manualClone(_ localPath:String, _ remotePath:String, _ branch:String = "master"){
         Swift.print("manualClone started")
@@ -40,13 +40,15 @@ class GitUtils{
 		_ = GitModifier.attachRemoteRepo(localPath, remotePath)
         Swift.print("attachRemoteRepo.completed")
         //--"git remote add origin https://github.com/user/testing.git" <-- attach a remote repo
-        let gitRepo:GitRepo = .init(localPath,  remotePath,  branch)
+        let gitRepo:GitRepo = GitRepo.gitRepo(localPath,  remotePath,  branch)
         
-        _ = GitModifier.pull(gitRepo)
-//        _ = GitModifier.fetch(gitRepo)
+        _ = GitModifier.fetch(gitRepo)
+        _ = GitModifier.checkOut(localPath, branch, "")
+//        _ = GitModifier.pull(gitRepo)//downloads files
+        
 //        Swift.print("fetch1.completed")
 		//--"git fetch origin master" <--Download the latest .git data
-//        _ = GitModifier.checkOut(localPath, "origin/"+branch, "")
+//
 //        Swift.print("checkOut.completed")
 		//--"git checkout master" <-- Switches to the master branch (if you are already there then skip this)
 //        _ = GitModifier.fetch(gitRepo)
@@ -61,9 +63,9 @@ class GitUtils{
      */
     static func commitCount(_ localRepoPath:String) -> String{
         let shellScript:String = Git.path + Git.git + " " + "rev-list HEAD --count"
-        var result:String = ShellUtils.run(shellScript,localRepoPath)
-        result = result.trim("\n")/*the result sometimes has a trailing line-break, this must be removed*/
-        return result
+        let result:String = ShellUtils.run(shellScript,localRepoPath)
+        if result.isEmpty {return "0"}
+        return result.endsWith("\n") ? result.trimRight("\n") : result/*the result sometimes has a trailing line-break, this must be removed*/
     }
     /**
      * NOTE: to find the first hash in a repo use this git command: git log -1 --pretty=format:"%H"
