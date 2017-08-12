@@ -1,17 +1,12 @@
 import Foundation
 
-extension CommitData{
-    static var hash:String = "Hash"
-    static var author:String = "Author"
-    static var date:String = "Date"
-    static var subject:String = "Subject"
-    static var body:String = "Body"
+class CommitDataUtils {
     /**
      * Returns a ComitData instance that is populated with auther, date, subject, body
      * EXAMPLE: GitLogParser.commitData("Hash:4caecd \n Author:Eonist \n Date:2015-12-03 16:59:09 +0100 \n Subject:'abc' \n Body:'123'")//Output: a CommitData instance
      * NOTE: the log data is formated using --pretty=format
      */
-    static func conform(_ input:String) -> CommitData{
+    static func conform(raw input:String) -> CommitData{
         /*Divide*/
         let firstIdx:Int = input.indexOf("\n")
         let firstPart:String = input.subString(0,firstIdx)
@@ -30,14 +25,15 @@ extension CommitData{
         let body = fifthPart.subString((CommitData.body + ":").count, fifthPart.count)
         return CommitData(hash:hash,author:author,date:date,subject:subject,body:body)
     }
+    
     /**
-     * describe
+     * Describe
      */
     static func describe(_ commitData:CommitData){
-         Swift.print("commitData.hash: " + "\(commitData.hash)")
-         Swift.print("commitData.author: " + "\(commitData.author)")
-         Swift.print("commitData.date: " + "\(commitData.date)")
-         Swift.print("commitData.subject: " + "\(commitData.subject)")
-         Swift.print("commitData.body: " + "\(commitData.body)")
+        Swift.print("commitData.hash: " + "\(commitData.hash)")
+        Swift.print("commitData.author: " + "\(commitData.author)")
+        Swift.print("commitData.date: " + "\(commitData.date)")
+        Swift.print("commitData.subject: " + "\(commitData.subject)")
+        Swift.print("commitData.body: " + "\(commitData.body)")
     }
 }
