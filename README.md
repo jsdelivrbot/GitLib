@@ -1,6 +1,6 @@
 ## **GitLib** 
 
-<img width="100" alt="img" src="https://rawgit.com/stylekit/img/master/GitLib.svg">
+<img width="100" alt="img" src="https://cdn.jsdelivr.net/gh/stylekit/img/GitLib.svg">
 
 - works by utilizing shell and git (CRUD)
 
